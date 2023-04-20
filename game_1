@@ -1,0 +1,115 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Define some colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# Set the dimensions of the screen
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 400
+
+# Set the dimensions of the blocks
+BLOCK_SIZE = 10
+
+# Set the speed of the snake
+SPEED = 10
+
+# Create the screen
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Snake Game")
+
+# Define the main function
+def main():
+    # Initialize the snake
+    snake = [(200, 200), (210, 200), (220, 200)]
+
+    # Set the initial direction of the snake
+    direction = "LEFT"
+
+    # Initialize the food
+    food = generate_food()
+
+    # Set the initial score
+    score = 0
+
+    # Create a clock
+    clock = pygame.time.Clock()
+
+    # Start the game loop
+    while True:
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT and direction != "RIGHT":
+                    direction = "LEFT"
+                elif event.key == pygame.K_RIGHT and direction != "LEFT":
+                    direction = "RIGHT"
+                elif event.key == pygame.K_UP and direction != "DOWN":
+                    direction = "UP"
+                elif event.key == pygame.K_DOWN and direction != "UP":
+                    direction = "DOWN"
+
+        # Move the snake
+        head = snake[0]
+        x, y = head
+        if direction == "LEFT":
+            x -= BLOCK_SIZE
+        elif direction == "RIGHT":
+            x += BLOCK_SIZE
+        elif direction == "UP":
+            y -= BLOCK_SIZE
+        elif direction == "DOWN":
+            y += BLOCK_SIZE
+        snake.insert(0, (x, y))
+
+        # Check if the snake has collided with the wall
+        if x < 0 or x >= SCREEN_WIDTH or y < 0 or y >= SCREEN_HEIGHT:
+            pygame.quit()
+            quit()
+
+        # Check if the snake has collided with itself
+        if head in snake[1:]:
+            pygame.quit()
+            quit()
+
+        # Check if the snake has eaten the food
+        if head == food:
+            food = generate_food()
+            score += 10
+        else:
+            snake.pop()
+
+        # Draw the screen
+        screen.fill(BLACK)
+        for block in snake:
+            pygame.draw.rect(screen, WHITE, (block[0], block[1], BLOCK_SIZE, BLOCK_SIZE))
+        pygame.draw.rect(screen, RED, (food[0], food[1], BLOCK_SIZE, BLOCK_SIZE))
+        pygame.display.update()
+
+        # Set the frame rate
+        clock.tick(SPEED)
+
+# Define the function to generate food
+def generate_food():
+    x = random.randrange(0, SCREEN_WIDTH - BLOCK_SIZE, BLOCK_SIZE)
+    y = random.randrange(0, SCREEN_HEIGHT - BLOCK_SIZE, BLOCK_SIZE)
+    return (x, y)
+
+# Call the main function
+main()
+
+# If you try to run this code into Colab or other web-based interfaces, it'll be giving error.
+
+# The error message "No available video device" occurs because Pygame requires a graphical output to run, and the environment in which you are trying to run the code does not have a graphical output available.
+
+# If you are running this code in a Jupyter notebook or on a server without a graphical interface, you may need to run it on a local machine with a graphical interface or use a virtual display like Xvfb.
+
+#If you are running this code on a local machine with a graphical interface, you can try running it outside of a Jupyter notebook and in a Python environment on your local machine.
